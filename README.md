@@ -1,5 +1,5 @@
 # CheapScript
-This plans to be an easier way of scripting in the DS generation of games, using Assembly mscros.
+This plans to be an easier way of scripting in the DS generation of games, using Assembly macros.
 
 ### Example:
 In our defines file, we will have something like this:
@@ -19,6 +19,7 @@ And in our script file, we will have something like this:
 ```
 .text
 .thumb
+.include "commands/b2w2.s"
 
 main:
      Message 0x1 0x2 0x0 0x0
