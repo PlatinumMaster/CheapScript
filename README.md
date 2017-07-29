@@ -6,6 +6,7 @@ This plans to be an easier way of scripting in the DS generation of games, using
 In our defines file, we will have something like this:
 
 > .macro Message id npc position type 
+
 > .hword 0x3C
 > .byte 0x0
 > .byte 0x04
