@@ -20,4 +20,4 @@ Main:
 StartTrainerBattle:
                 Message 0x0 0x0 0x0 0x0 @ Again, opens a normal message box at the bottom of the screen, prints the first message in a text file to that box, and has the bubble point to the first NPC on the map.
                 TrainerBattleVs1 0x9D 0x0 @ Start a trainer battle with trainer 157.
-                Release @ Allow all NPCs to move again.
+                ReleaseAll @ Allow all NPCs to move again.
