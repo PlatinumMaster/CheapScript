@@ -60,11 +60,6 @@
 .hword \value
 .endm
 
-.macro Unknown_0D value
-.hword 0x0D
-.hword \value
-.endm
-
 .macro Unknown_0E value
 .hword 0x0E
 .hword \value
@@ -693,6 +688,8 @@
 
 .macro SetVar84 value
 .hword 0x84
+.hword \value
+.endm
 
 @ Because the same command (0x85) can be used twice for both double and single battles involving one trainer, I'll simplify the usage.
 
