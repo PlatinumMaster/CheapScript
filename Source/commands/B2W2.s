@@ -1,6 +1,14 @@
-@Scripting Macros for Pokémon Black 2 Version and White 2 Version
+@ Scripting Macros for Pokémon Black 2 Version and White 2 Version
 @ Original Reference by Kaphotics. http://pastebin.com/raw/vrkp0SN8
 
+@ Commands not in the game.
+.macro Header EndScript
+.word \EndScript
+.byte 0x13
+.byte 0xFD
+.endm
+
+@ Game Commands.
 .macro End
 .hword 0x02
 .endm
