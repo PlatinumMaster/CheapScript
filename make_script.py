@@ -70,8 +70,7 @@ def run_glob(globstr, fn):
 def main(option):
 	if option == "build":
 		globs = {
-			'commands/B2W2.s': ignore,
-			'.s': process_assembly
+			'**/*.s': process_assembly
 		}
 
 		try:
@@ -85,7 +84,7 @@ def main(option):
 		objcopy(objects)
 		
 	elif option == "clean":
-		os.removedirs(BUILD)
+		shutil.rmtree(BUILD)
 		print "Cleaned build directory."
 		
 	elif option == "help":
