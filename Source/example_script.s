@@ -8,6 +8,7 @@
  
 Header:
                 Header Main
+                HeaderEnd
 Main: 
                 LockAll @ Freezes all objects on the map.
                 FacePlayer @ Turns the NPC with the script assigned towards the player.
@@ -23,3 +24,4 @@ StartTrainerBattle:
                 Message 0x0 0x0 0x0 0x0 @ Again, opens a normal message box at the bottom of the screen, prints the first message in a text file to that box, and has the bubble point to the first NPC on the map.
                 TrainerBattleVs1 0x9D 0x0 @ Start a trainer battle with trainer 157.
                 ReleaseAll @ Allow all NPCs to move again.
+                End @ Ends rhe script.
