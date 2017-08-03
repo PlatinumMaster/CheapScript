@@ -1,14 +1,16 @@
 @ Scripting Macros for Pokémon Black 2 Version and White 2 Version
 @ Original Reference by Kaphotics. http://pastebin.com/raw/vrkp0SN8
 
-@ Commands not in the game.
-.macro Header EndScript
-.word \EndScript
-.byte 0x13
-.byte 0xFD
+@ This is for testing purposes.
+.macro Header Script
+.word \Script
 .endm
 
-@ Game Commands.
+.macro EndHeader
+.hword 0xFD13
+.endm
+
+@ Commands
 .macro End
 .hword 0x02
 .endm
@@ -60,6 +62,11 @@
 
 .macro Unknown_0C value
 .hword 0x0C
+.hword \value
+.endm
+
+.macro Unknown_0D value
+.hword 0x0D
 .hword \value
 .endm
 
@@ -696,8 +703,6 @@
 
 .macro SetVar84 value
 .hword 0x84
-.hword \value
-.endm
 
 @ Because the same command (0x85) can be used twice for both double and single battles involving one trainer, I'll simplify the usage.
 
@@ -743,7 +748,355 @@
 .hword \arg2
 .endm
 
-.macro PlaySound soundid
+.macro PlayTrainerMusic songid
+.hword 0x8B
+.hword \songid
+.endm
+
+.macro EndBattle 
+.hword 0x8C
+.endm
+
+.macro StoreBattleResult variable
+.hword 0x8D 
+.hword \variable
+.endm
+
+.macro DisableTrainer
+.hword 0x8E
+.endm
+
+.macro DVar90 arg arg2
+.hword 0x90
+.hword \arg
+.hword \arg2
+.endm
+
+.macro DVar92 arg arg2
+.hword 0x92
+.hword \arg
+.hword \arg2
+.endm
+
+.macro DVar93 arg arg2
+.hword 0x93
+.hword \arg
+.hword \arg2
+.endm
+
+.macro TrainerBattle trainerid arg2 arg3 arg4
+.hword 0x94 
+.hword \trainerid
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.endm
+
+.macro DeactivateTrainerID id
+.hword 0x95
+.hword \id
+.endm
+
+.macro Unknown_96 trainerid
+.hword 0x96
+.hword \trainerid
+.endm
+
+.macro StoreActiveTrainerID trainerid arg2
+.hword 0x97
+.hword \trainerid
+.hword \arg2
+.endm
+
+.macro ChangeMusic songid
+.hword 0x98
+.hword \songid
+.endm
+
+.macro FadeToDefaultMusic
+.hword 0x9E
+.endm
+
+.macro Unknown_9F
+.hword 0x9F
+.endm
+
+.macro Unknown_A2 sound arg2
+.hword 0xA2
+.hword \sound
+.hword \arg2
+.endm
+
+.macro Unknown_A3 arg
+.hword 0xA3
+.hword \arg
+.endm
+
+.macro Unknown_A4 arg
+.hword 0xA4
+.hword \arg
+.endm
+
+.hword Unknown_A5 arg arg2
+.hword 0xA5
+.hword \arg
+.hword \arg2
+.endm
+
+.macro PlaySound id
 .hword 0xA6
-.hword \soundid
+.hword \id
+.endm
+
+.macro WaitSoundA7
+.hword 0xA7
+.endm
+
+.macro WaitSound
+.hword 0xA8
+.endm
+
+.macro PlayFanfare id
+.hword 0xA9
+.hword \id
+.endm
+
+.macro WaitFanfare
+.hword 0xAA
+.endm
+
+.macro PlayCry id arg2
+.hword 0xAB
+.hword \id
+.hword \arg2
+.endm
+
+.macro WaitCry 
+.hword 0xAC
+.endm
+
+.macro SetTextScriptMessage id arg2 arg3
+.hword 0xAF
+.hword \id
+.hword \arg2
+.hword \arg3
+.endm
+
+.macro CloseMulti
+.hword 0xB0
+.endm
+
+.macro Unknown_B1
+.hword 0xB1
+.endm
+
+.macro Multi2 arg arg2 arg3 arg4 arg5 var
+.hword 0xB2
+.byte \arg
+.byte \arg2
+.byte \arg3
+.byte \arg4
+.byte \arg5
+.hword \var
+.endm
+
+.macro FadeScreen arg arg2 arg3 arg4
+.hword 0xB3
+.hword \arg
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.endm
+
+.macro ResetScreen arg arg2 arg3
+.hword 0xB4
+.hword \arg
+.hword \arg2
+.hword \arg3
+.endm
+
+.macro Screen_B5 arg arg2 arg3
+.hword 0xB5
+.hword \arg
+.hword \arg2
+.hword \arg3
+.endm
+
+.macro TakeItem item quantity result
+.hword 0xB6
+.hword \item
+.hword \quantity
+.hword \result
+.endm
+
+.macro CheckItemBagSpace item quantity result
+.hword 0xB7
+.hword \item
+.hword \minimumquantity
+.hword \result
+.endm
+
+.macro CheckItemBagNumber item minimumquantity result
+.hword 0xB8
+.hword \item
+.hword \result
+.endm
+
+.macro StoreItemCount item result
+.hword 0xB9
+.hword \item
+.hword \result
+.endm
+
+.macro Unknown_BA arg arg2 arg3 arg4
+.hword 0xBA
+.hword \arg
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.endm
+
+.macro Unknown_BB arg arg2
+.hword 0xBB
+.hword \arg
+.hword \arg2
+.endm
+
+.macro Unknown_BC arg
+.hword 0xBC
+.hword \arg
+.endm
+
+.macro Warp mapid xcoord ycoord
+.hword 0xBE
+.hword \mapid
+.hword \xcoord
+.hword \ycoord
+.endm
+
+.macro TeleportWarp mapid xcoord ycoord zcoord
+.hword 0xBF
+.hword \mapid
+.hword \xcoord
+.hword \ycoord
+.hword \zcoord
+.endm
+
+.macro FallWarp mapid xcoord ycoord
+.hword 0xC1
+.hword \mapid
+.hword \xcoord
+.hword \ycoord
+.endm
+
+.macro FastWarp mapid xcoord ycoord herofacing
+.hword 0xC2
+.hword \mapid
+.hword \xcoord
+.hword \ycoord
+.hword \herofacing
+.endm
+
+.macro UnionWarp 
+.hword 0xC3
+.endm
+
+.macro TeleportWarp mapid xcoord ycoord zcoord herofacing
+.hword 0xC4
+.hword \mapid
+.hword \xcoord
+.hword \ycoord
+.hword \zcoord
+.hword \herofacing
+.endm
+
+.macro SurfAnimation
+.hword 0xC5
+.endm
+
+.macro SpecialAnimation arg
+.hword 0xC6
+.hword \arg
+.endm
+
+.macro SpecialAnimation2 arg arg2
+.hword 0xC7
+.hword \arg
+.hword \arg2
+.endm
+
+.macro CallAnimation id arg2
+.hword 0xC8
+.hword \arg
+.hword \arg2
+.endm
+
+.macro StoreRandomNumber arg arg2
+.hword 0xCB
+.hword \arg
+.hword \arg2
+.endm
+
+.macro StoreVarItem arg 
+.hword 0xCC
+.hword \arg
+.endm
+
+.macro StoreVar_CD arg 
+.hword 0xCD
+.hword \arg
+.endm
+
+.macro StoreVar_CE arg 
+.hword 0xCE
+.hword \arg
+.endm
+
+.macro StoreVar_CF arg 
+.hword 0xCF
+.hword \arg
+.endm
+
+.macro StoreDate month date
+.hword 0xD0
+.hword \month
+.hword \date
+.endm
+
+.macro Store_D1 arg arg2
+.hword 0xD1
+.hword \arg
+.hword \arg2
+.endm
+
+.macro Store_D2 arg arg2
+.hword 0xD2
+.hword \arg
+.endm
+
+.macro Store_D3 arg arg2
+.hword 0xD3
+.hword \arg
+.endm
+
+.macro StoreBirthDay month day
+.hword 0xD4
+.hword \month
+.hword \day
+.endm
+
+.macro StoreBadge var badge
+.hword 0xD5
+.hword \var
+.hword \badge
+.endm
+
+.macro SetBadge badge
+.hword 0xD6
+.hword \badge
+.endm
+
+.macro StoreBadgeNumber badge
+.hword 0xD7
+.hword \badge
 .endm
