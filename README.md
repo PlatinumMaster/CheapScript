@@ -1,6 +1,6 @@
 # CheapScript
 This plans to be an easier way of scripting in the DS generation of games, using Assembly macros.
-## Note:
+### Note:
 The build scripts still need a bit of improving, as they were thrown together with some "lazy" coding.
 
 ## Setup
