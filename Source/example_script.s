@@ -7,6 +7,7 @@
 .include "./Source/commands/B2W2.s" 
 .include "./Source/commands/Custom.s" 
 
+
 Header:
 				Header Main
 				EndHeader
@@ -20,12 +21,12 @@ Main:
 				
 Conditional:
                 If 0x1 StartTrainerBattle-Conditional-3
-				Message 0x0 0x2 0x0 0x0
+				Message 0x0 0x0 0x0 0x0
 				End
 
 StartTrainerBattle:
 				PlaySound 0x573
-                AngryMessage 0x1 0x0 0x0 
+                AngryMessage 0x0 0x0 0x0 
                 CloseAngryMessage
 				TrainerBattle 0x9D 0x9E 0x0
 				End @ Ends the script.

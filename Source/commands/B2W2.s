@@ -1079,7 +1079,10 @@
 .hword 0xD7
 .hword \badge
 .endm
+<<<<<<< HEAD
 
 .macro BootPCSound
 .hword 0x130
 .endm
+=======
+>>>>>>> 6443efd3acb785e2986f039c5f94023a041360ff
