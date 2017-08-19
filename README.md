@@ -5,8 +5,9 @@ The build scripts still need a bit of improving, as they were thrown together wi
 
 ## Setup
 ### Requirements
-devkitPro (r46 is the recommended version).
-Python 3.5 or above.
+* devkitPro (r46 is the recommended version).
+
+* Python 3.5 or above.
 
 
 ### Usage
