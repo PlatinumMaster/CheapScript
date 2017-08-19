@@ -1,5 +1,5 @@
 # Configuration for the "CheapScript" build system.
 general:
-   Source Folder: ./source
-   Build Folder: ./build
-   devkitARM PATH: #C://devkitPro//devkitARM/bin
+   Source Folder: ./Source
+   Build Folder: ./Build
+   devkitARM PATH: C:/devkitPro/devkitARM/bin/

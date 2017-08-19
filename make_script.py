@@ -17,7 +17,7 @@ import shutil
 devkitPATH = ""
 Paths = os.environ.get('PATH').split(';')
 
-with open("config.yml", r) as yamlfile:
+with open("config.yml", 'r') as yamlfile:
 			config = yaml.load(yamlfile)
 
 for Path in Paths:
@@ -30,17 +30,21 @@ for Path in Paths:
 		devkitPATH = config['general']['devkitARM PATH']
 		if os.path.isdir(devkitPATH) == False:
 			print ("The directory specified in your configuration file (" + devkitPATH + ") does not contain devkitARM.\nExiting...")
-	   	sys.exit(1)
+			sys.exit(1)
 		else:
-			print "devkitARM was detected at " + devkitPATH + "."
-	   
+			print ("devkitARM was detected at " + devkitPATH + ".")
+			break
+				   
 # Set up devkitARM for compilation.
 PREFIX = 'arm-none-eabi-'
-AS = (PATH + PREFIX + 'as')
+AS = (devkitPATH + PREFIX + 'as')
 ASFLAGS = ['-mthumb']
-OBJCOPY = (PATH + PREFIX + 'objcopy')
+OBJCOPY = (devkitPATH + PREFIX + 'objcopy')
 BUILD = config['general']['Build Folder']
 SOURCE = config['general']['Source Folder']
+
+ScriptFiles = os.listdir(SOURCE)
+ObjectFiles = os.listdir(BUILD)
 
 def run_command(cmd):
 	try:
@@ -49,38 +53,29 @@ def run_command(cmd):
 		print(e.output.decode(), file = sys.stderr)
 		sys.exit(1)
 
-def process_assembly(in_file):
+def process_assembly():
 	'''Assemble'''
-	print ('Assembling %s' % in_file)
-	cmd = [AS] + [ASFLAGS] + ['-c', in_file, '-o', BUILD + "//" + in_file.replace(".s", ".o")]
-	run_command(cmd)
-	return out_file
+	ScriptFiles.remove('commands')
+	for script in ScriptFiles:
+		print('Assembling ' + script)
+		cmd = [AS] + [ASFLAGS] + ['-c', SOURCE + "/" + script, '-o', BUILD + '/' + script.replace('.s', '.o')]
+		print(cmd)
+		run_command(cmd)
 
-def objcopy(binary):
-	cmd = [OBJCOPY, '-O', 'binary', binary, binary.replace('.o', '.bin')]
-	run_command(cmd)
-
-def run_glob(globstr, fn):
-	'''Glob recursively and run the processor function on each file in result'''
-	if sys.version_info > (3, 4):
-		files = glob(os.path.join(SOURCE, globstr), recursive = True)
-		return map(fn, files)
-	else:
-		files = Path(SOURCE).glob(globstr)
-		return map(fn, map(str, files))
+def objcopy():
+	for object in ObjectFiles:
+		cmd = [OBJCOPY, '-O', 'binary', BUILD + '/' + object, BUILD + '/' + object.replace('.o', '.bin')]
+		run_command(cmd)
 
 def main(option):
 	if option == "build":
-		globs = {
-			'**/*.s': process_assembly
-		}
 		try:
 			os.makedirs(BUILD)
 		except FileExistsError:
 			pass
 		# Process Assembly & Make Binary
-		objects = itertools.starmap(run_glob, globs.items())
-		objcopy(objects)
+		process_assembly()
+		objcopy()
 		
 	elif option == "clean":
 		shutil.rmtree(BUILD)

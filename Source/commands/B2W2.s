@@ -1,15 +1,6 @@
 @ Scripting Macros for Pokémon Black 2 Version and White 2 Version
 @ Original Reference by Kaphotics. http://pastebin.com/raw/vrkp0SN8
 
-@ This is for testing purposes.
-.macro Header Script
-.word \Script
-.endm
-
-.macro EndHeader
-.hword 0xFD13
-.endm
-
 @ Commands
 .macro End
 .hword 0x02
@@ -22,10 +13,10 @@
 
 .macro CallRoutine arg
 .hword 0x04
-.word \arg
+.word \arg-4
 .endm
 
-.macro EndFunction arg @ I honestly have no idea what this does.
+.macro EndFunction arg
 .hword 0x05
 .hword \arg
 .endm
@@ -62,11 +53,6 @@
 
 .macro Unknown_0C value
 .hword 0x0C
-.hword \value
-.endm
-
-.macro Unknown_0D value
-.hword 0x0D
 .hword \value
 .endm
 
@@ -138,13 +124,13 @@
 
 .macro Jump offset
 .hword 0x1E
-.word \offset
+.word \offset-4
 .endm
 
 .macro If value offset
 .hword 0x1F
 .byte \value
-.word \offset
+.word \offset-4
 .endm
 
 .macro Unknown_21 value
@@ -519,7 +505,7 @@
 .macro ApplyMovement npc movementdata
 .hword 0x64
 .hword \npc
-.word \movementdata
+.word \movementdata-4
 .endm
 
 .macro WaitMovement
@@ -703,17 +689,10 @@
 
 .macro SetVar84 value
 .hword 0x84
-
-@ Because the same command (0x85) can be used twice for both double and single battles involving one trainer, I'll simplify the usage.
-
-.macro TrainerBattleVs1 trainerid logic
-.hword 0x85
-.hword \trainerid
-.hword 0x00
-.hword \logic
+.hword \value
 .endm
 
-.macro TrainerBattleVs2 trainerid trainerid2 logic
+.macro SingleTrainerBattle trainerid trainerid2 logic
 .hword 0x85
 .hword \trainerid
 .hword \trainerid2
@@ -837,7 +816,7 @@
 .hword \arg
 .endm
 
-.hword Unknown_A5 arg arg2
+.macro Unknown_A5 arg arg2
 .hword 0xA5
 .hword \arg
 .hword \arg2
@@ -1001,7 +980,7 @@
 .hword 0xC3
 .endm
 
-.macro TeleportWarp mapid xcoord ycoord zcoord herofacing
+.macro TeleportWarp2 mapid xcoord ycoord zcoord herofacing
 .hword 0xC4
 .hword \mapid
 .hword \xcoord
@@ -1099,4 +1078,8 @@
 .macro StoreBadgeNumber badge
 .hword 0xD7
 .hword \badge
+.endm
+
+.macro BootPCSound
+.hword 0x130
 .endm
