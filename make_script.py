@@ -1,50 +1,33 @@
 #!/usr/bin/env python3
-
-'''CheapScript Build System.
-Based on a similar one by DizzyEgg.
-©2017 PlatinumMaster.'''
-
-from glob import glob
-from pathlib import Path
+'''
+CheapScript Build System.
+©2018 PlatinumMaster.
+'''
+import glob
 import os
-import itertools
 import subprocess
 import sys
-import yaml
 import shutil
 
-''' devkitARM PATH detection. '''
-devkitPATH = ""
-Paths = os.environ.get('PATH').split(';')
+# Usage
+usage = "CheapScript Build System\nUsage:\n\"help\" - Displays this, then exits.\n\"build\" - Builds all of the scripts in the scripts folder.\n\"clean\" - Cleans the output folder."
 
-with open("config.yml", 'r') as yamlfile:
-			config = yaml.load(yamlfile)
-
-for Path in Paths:
-	if "devkitARM" in Path:
-	   devkitPATH = Path
-	   print ("devkitARM was detected at " + devkitPATH + ".")
-	   break  
-	else:
-		print ("devkitARM was not found in your PATH.\nChecking the configuration for a path to devkitARM...")
-		devkitPATH = config['general']['devkitARM PATH']
-		if os.path.isdir(devkitPATH) == False:
-			print ("The directory specified in your configuration file (" + devkitPATH + ") does not contain devkitARM.\nExiting...")
-			sys.exit(1)
-		else:
-			print ("devkitARM was detected at " + devkitPATH + ".")
-			break
-				   
-# Set up devkitARM for compilation.
+# devkitARM
+devkitPATH = 'C://devkitPro/devkitARM/bin/'
 PREFIX = 'arm-none-eabi-'
 AS = (devkitPATH + PREFIX + 'as')
 ASFLAGS = ['-mthumb']
 OBJCOPY = (devkitPATH + PREFIX + 'objcopy')
-BUILD = config['general']['Build Folder']
-SOURCE = config['general']['Source Folder']
 
-ScriptFiles = os.listdir(SOURCE)
-ObjectFiles = os.listdir(BUILD)
+# Make output directory if it doesn't already exist.
+try:
+	os.makedirs('output')
+except FileExistsError:
+	pass
+			
+# Directory definitions.
+build_dir = os.getcwd() + "/output/"
+script_dir = os.getcwd() + "/scripts/"
 
 def run_command(cmd):
 	try:
@@ -52,43 +35,44 @@ def run_command(cmd):
 	except subprocess.CalledProcessError as e:
 		print(e.output.decode(), file = sys.stderr)
 		sys.exit(1)
-
+	
 def process_assembly():
-	'''Assemble'''
-	ScriptFiles.remove('commands')
-	for script in ScriptFiles:
-		print('Assembling ' + script)
-		cmd = [AS] + [ASFLAGS] + ['-c', SOURCE + "/" + script, '-o', BUILD + '/' + script.replace('.s', '.o')]
-		print(cmd)
+	scripts = os.listdir(script_dir)
+	for script in scripts:
+		print("Assembling %s" % script)
+		cmd = [AS] + [ASFLAGS] + ['-c', script_dir + script, '-o', build_dir + script.replace('.s', '.o')]
 		run_command(cmd)
-
-def objcopy():
-	for object in ObjectFiles:
-		cmd = [OBJCOPY, '-O', 'binary', BUILD + '/' + object, BUILD + '/' + object.replace('.o', '.bin')]
-		run_command(cmd)
-
-def main(option):
-	if option == "build":
-		try:
-			os.makedirs(BUILD)
-		except FileExistsError:
+		
+def process_objects():
+	objects = os.listdir(build_dir)
+	for object in objects:
+		if object[-4:] == ".o":
 			pass
-		# Process Assembly & Make Binary
-		process_assembly()
-		objcopy()
-		
-	elif option == "clean":
-		shutil.rmtree(BUILD)
-		print ("Cleaned build directory.")
-	elif option == "help":
-		print ("Help:" + "\n" + "make_script.py <syntax>" + "\n" + "\n" + "build - Attempt to build the source." + "\n" + "clean - Delete files from a previous build." + "\n" + "help - Displays the list of commands.")
-	elif option == "":
-		print ("No arguments given. Run \"help\" to see the possible arguments.")
+		else:	
+			print("Making %s into binary" % object)
+			cmd = [OBJCOPY, '-O', 'binary', build_dir + object, build_dir + object.replace('.o', '.bin')]
+			run_command(cmd)
+			
+def clean():
+	confirmation = input('Using this option will remove all compiled scripts from the output folder. Are you sure you want to continue? ')
+	if confirmation.lower() == "yes":
+		print("Cleaning build directory...")
+		shutil.rmtree(build_dir)
+		print("Done.")
 	else:
-		print ("Unknown parameter. Run this program with the argument \"help\" to see the possible arguments.")
-		
-if __name__ == '__main__':
-	main(sys.argv[1].lower())
-    
-    
-    
+		sys.exit(1)
+
+def main(choice):
+	if choice.lower() == "build":
+		process_assembly()
+		process_objects()
+	elif choice.lower() == "clean":
+		clean()
+	else:
+		print("Unrecognized option.\n")
+		print(usage)
+try:
+	main(sys.argv[1])
+except IndexError:
+	print("No parameters given.\n")
+	print(usage)
