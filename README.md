@@ -28,10 +28,17 @@ As shown in the "example_script.s", you must have the the following lines (repla
 .include "include/commands/(GAME_OF_CHOICE).s" 
 ```
 
-From there, you can begin to write your script.
+Under that, we will point to the main starting point of our script(s) in the header section:
+```
+@ Point to your script here.
+Header:
+	script Example
+	EndHeader
+```
+From there, you can begin to write your script. An example script cam be found in the `scripts` folder.
 
 ### Commands:
-For a list of commands, click the "Wiki" tab.
+For a list of implemented commands, click the "Wiki" tab.
 
 
 ### Credits:
