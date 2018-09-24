@@ -29,14 +29,14 @@ As shown in the "example_script.s", you must have the the following lines (repla
 ```
 
 Under that, we will point to the main starting point of our script(s) in the header section. So if the script label is called `Example`, I'd point to it like this:
-```
+```R
 @ Point to your script here.
 Header:
 	script Example
 	EndHeader
 ```
 And then, writing the script is as simple as this:
-```
+```R
 Example:
 	@ Script commands go here.
 ```
