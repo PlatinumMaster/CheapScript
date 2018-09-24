@@ -5,27 +5,33 @@
 .thumb
 
 .include "include/commands/B2W2.s" 
-.include "include/commands/Custom.s" 
 
+
+@ Point to your script here.
+Header:
+	script Main
+	EndHeader
+	
+@ Actual script
 Main: 
-		PlaySound 0x547
-		Message2 0x0 0x0 0x0 0x0 
-		YesNo 0x8010
-		WaitButton				
-		StoreVar 0x8010
-		CompareTo 0x0
-		Condition 0x1
-				
-Conditional:
-		If 0x1 StartTrainerBattle-Conditional-3
-		Message 0x0 0x0 0x0 0x0
-		WaitButton
-		End
-
-StartTrainerBattle:
-		PlaySound 0x573
-		AngryMessage 0x0 0x0 0x0 
-		WaitButton
-		CloseAngryMessage
-		TrainerBattle 0x9D 0x9E 0x0
-		End @ Ends the script.
+	PlaySound 1351
+	Message2 0 0 0 0
+	YesNo 0x8010
+	WaitButton	
+	CloseMessageKP
+	StoreVar 0x8010
+	CompareTo 0
+	Condition Condition_EqualTo
+	If Condition_EqualTo Jump Main_StartTrainerBattle
+	Message 0 0 0 0
+	WaitButton
+	End
+	
+@ Branch of the original script
+Main_StartTrainerBattle:
+	PlaySound 1395
+	AngryMessage 0 0 0
+	WaitButton
+	CloseAngryMessage
+	TrainerBattle 157 0 0
+	End @ Ends the script.

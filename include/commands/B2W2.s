@@ -1,6 +1,23 @@
 @ Scripting Macros for Pokémon Black 2 Version and White 2 Version
 @ Original Reference by Kaphotics. http://pastebin.com/raw/vrkp0SN8
 
+@ Header 
+.macro script, adr=0
+.word  \adr - 1f
+1:
+.endm
+
+.macro EndHeader
+.hword 0xFD13
+.endm
+
+@ Conditions
+.equ Condition_LowerThan, 0
+.equ Condition_EqualTo, 1
+.equ Condition_GreaterThan, 2
+.equ Condition_LowerThanorEqualTo, 3
+.equ Condition_GreaterThanorEqualTo, 4
+
 @ Commands
 .macro End
 .hword 0x02
@@ -124,13 +141,15 @@
 
 .macro Jump offset
 .hword 0x1E
-.word \offset-4
+.word \offset-1f
+1:
 .endm
 
-.macro If value offset
+.macro If value Jump offset
 .hword 0x1F
 .byte \value
-.word \offset-4
+.word   \offset - 1f
+1:
 .endm
 
 .macro Unknown_21 value
@@ -505,7 +524,8 @@
 .macro ApplyMovement npc movementdata
 .hword 0x64
 .hword \npc
-.word \movementdata-4
+.word   \movementdata - 1f
+1:
 .endm
 
 .macro WaitMovement
