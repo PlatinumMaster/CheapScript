@@ -236,12 +236,12 @@
 
 .macro MusicalMessage id
 .hword 0x33
-.hword \message
+.hword \id
 .endm
 
 .macro EventGreyMessage id location
 .hword 0x34
-.hword \message
+.hword \id
 .byte \location
 .endm
 
@@ -255,7 +255,7 @@
 
 .macro BubbleMessage id location
 .hword 0x38
-.hword \message
+.hword \id
 .byte \location
 .endm
 
@@ -265,7 +265,7 @@
 
 .macro ShowMessageAt id xcoord ycoord zcoord
 .hword 0x3A
-.hword \message
+.hword \id
 .hword \xcoord
 .hword \ycoord
 .hword \zcoord
