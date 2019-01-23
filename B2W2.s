@@ -141,14 +141,14 @@
 
 .macro Jump offset
 .hword 0x1E
-.word \offset-1f
+.word \offset - 1f
 1:
 .endm
 
 .macro If value Jump offset
 .hword 0x1F
 .byte \value
-.word   \offset - 1f
+.word \offset - 1f
 1:
 .endm
 
@@ -236,12 +236,12 @@
 
 .macro MusicalMessage id
 .hword 0x33
-.hword \message
+.hword \id
 .endm
 
 .macro EventGreyMessage id location
 .hword 0x34
-.hword \message
+.hword \id
 .byte \location
 .endm
 
@@ -255,7 +255,7 @@
 
 .macro BubbleMessage id location
 .hword 0x38
-.hword \message
+.hword \id
 .byte \location
 .endm
 
@@ -265,7 +265,7 @@
 
 .macro ShowMessageAt id xcoord ycoord zcoord
 .hword 0x3A
-.hword \message
+.hword \id
 .hword \xcoord
 .hword \ycoord
 .hword \zcoord
@@ -973,12 +973,13 @@
 .hword \ycoord
 .endm
 
-.macro TeleportWarp mapid xcoord ycoord zcoord
+.macro TeleportWarp mapid xcoord ycoord zcoord npcfacing
 .hword 0xBF
 .hword \mapid
 .hword \xcoord
 .hword \ycoord
 .hword \zcoord
+.hword \npcfacing
 .endm
 
 .macro FallWarp mapid xcoord ycoord
@@ -1100,6 +1101,24 @@
 .hword \badge
 .endm
 
+.macro CheckMoney storage value
+.hword 0xFB
+.hword \storage
+.hword \value
+.endm
+
+.macro GivePokemon id item level
+.hword 0x10C
+.hword 0
+.hword \id
+.hword \item
+.hword \level
+.endm
+
 .macro BootPCSound
 .hword 0x130
+.endm
+
+.macro FadeIntoBlack
+.hword 0x1AC
 .endm
