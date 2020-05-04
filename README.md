@@ -15,7 +15,7 @@ In order to help people understand the format of Generation 5 scripts, I have wr
 To invoke the decompiler and save to a file, simply find a script container from the game which you'd like to decompile, then invoke this command:
 > python DeCheapScript.py <script container name> > <output destination>.s
 
-If you just want to see the script printed to the console (not necessarily recommended...), omit the `.` operator:
+If you just want to see the script printed to the console (not necessarily recommended...), omit the `>` operator:
 > python DeCheapScript.py <script container name>
 
 ### Writing a custom script container:
