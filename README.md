@@ -73,7 +73,7 @@ ExampleScript2:
 
 ## Building
 To compile a single script container, run the following command in a console:
-> python CheapScript.py <script container> <destination>
+> python CheapScript.py <script container> \<destination>
 
 ## Commands
 For a list of implemented commands, click the "Wiki" tab. Otherwise, see [this](https://pastebin.com/QPrYmFwY) reference for commands which may not be implemented as of yet.
