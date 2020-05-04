@@ -1,7 +1,7 @@
 @ Scripting Macros for Pokémon Black 2 Version and White 2 Version
-@ Original Reference by Kaphotics. http://pastebin.com/raw/vrkp0SN8
+@ Original Reference by Kaphotics and others at ProjectPokemon. http://pastebin.com/raw/vrkp0SN8
 
-@ Header 
+@ Header
 .macro script, adr=0
 .word  \adr - 1f
 1:
@@ -12,13 +12,32 @@
 .endm
 
 @ Conditions
-.equ Condition_LowerThan, 0
-.equ Condition_EqualTo, 1
-.equ Condition_GreaterThan, 2
-.equ Condition_LowerThanorEqualTo, 3
-.equ Condition_GreaterThanorEqualTo, 4
+.equ LOWER, 0
+.equ EQUAL, 1
+.equ GREATER, 2
+.equ LOWER_OR_EQUAL, 3
+.equ GREATER_OR_EQUAL, 4
+.equ DIFFERENT, 5
+
+@ ApplyMovement Movement Commands
+.macro Movement type length
+.hword \type
+.hword \length
+.endm
+
+.macro EndMovement
+.word 0xFE
+.endm
 
 @ Commands
+.macro Nop
+.hword 0x00
+.endm
+
+.macro Nop2
+.hword 0x01
+.endm
+
 .macro End
 .hword 0x02
 .endm
@@ -28,47 +47,46 @@
 .hword \arg
 .endm
 
-.macro CallRoutine arg
+.macro CallRoutine adr:req
 .hword 0x04
-.word \arg-4
+.word \adr - 4 - .
 .endm
 
-.macro EndFunction arg
+.macro EndRoutine
 .hword 0x05
-.hword \arg
 .endm
 
-.macro Logic06 arg
+.macro GetDerefVar06 arg
 .hword 0x06
 .hword \arg
 .endm
 
-.macro Logic07 arg
+.macro GetDerefVar07 arg
 .hword 0x07
 .hword \arg
 .endm
 
-.macro CompareTo value
+.macro SetStackVar value
 .hword 0x08
 .hword \value
 .endm
 
-.macro StoreVar var
+.macro SetStackDerefVar var
 .hword 0x09
 .hword \var
 .endm
 
-.macro ClearVar var
+.macro GetStackVar var
 .hword 0x0A
 .hword \var
 .endm
 
-.macro Unknown_0B value
+.macro PopStack value
 .hword 0x0B
 .hword \value
 .endm
 
-.macro Unknown_0C value
+.macro AddStackVar value
 .hword 0x0C
 .hword \value
 .endm
@@ -133,38 +151,42 @@
 .macro CallStd function
 .hword 0x1C
 .hword \function
-.endm
+.endm  
 
 .macro ReturnStd function
 .hword 0x1D
 .endm
 
-.macro Jump offset
+.macro Jump adr:req
 .hword 0x1E
-.word \offset - 1f
-1:
+.word \adr - 4 - .
 .endm
 
-.macro If value Jump offset
+.macro When value adr:req
 .hword 0x1F
 .byte \value
-.word \offset - 1f
-1:
+.word \adr - 4 - .
 .endm
 
-.macro Unknown_21 value
+.macro If value adr:req
+.hword 0x20
+.byte \value
+.word \adr - 4 - .
+.endm
+
+.macro CMD_21 value
 .hword 0x21
 .hword \value
 .endm
 
-.macro Unknown_22 value
+.macro CMD_22 value
 .hword 0x22
 .hword \value
 .endm
 
 .macro SetFlag flag
 .hword 0x23
-.hword \value
+.hword \flag
 .endm
 
 .macro ClearFlag flag
@@ -178,43 +200,33 @@
 .hword \status
 .endm
 
-.macro SetVar26 value1 value2
+.macro AddVars value1 value2
 .hword 0x26
 .hword \value1
 .hword \value2
 .endm
 
-.macro SetVar27 value1 value2
+.macro SubVars value1 value2
 .hword 0x27
 .hword \value1
 .hword \value2
 .endm
 
-.macro SetVarEqVal container value
+.macro StoreValueInVar container value
 .hword 0x28
 .hword \container
 .hword \value
 .endm
 
-.macro SetVar29 container value
+.macro StoreVarInVar container value
 .hword 0x29
 .hword \container
 .hword \value
 .endm
 
-.macro SetVar2A container value
+.macro StoreDerefVarInVar container value
 .hword 0x2A
 .hword \container
-.hword \value
-.endm
-
-.macro SetVar2B value
-.hword 0x2B
-.hword \value
-.endm
-
-.macro Unknown_2D value
-.hword 0x2D
 .hword \value
 .endm
 
@@ -222,7 +234,7 @@
 .hword 0x2E
 .endm
 
-.macro UnlockAll
+.macro ReleaseAll
 .hword 0x2F
 .endm
 
@@ -242,14 +254,14 @@
 .macro EventGreyMessage id location
 .hword 0x34
 .hword \id
-.byte \location
+.hword \location
 .endm
 
 .macro CloseMusicalMessage
 .hword 0x35
 .endm
 
-.macro ClosedEventGreyMessage
+.macro CloseEventGreyMessage
 .hword 0x36
 .endm
 
@@ -275,20 +287,20 @@
 .hword 0x3B
 .endm
 
-.macro Message id npc position type
+.macro Message arg arg2 id npc position type
 .hword 0x3C
-.byte 0x0
-.byte 0x04
+.byte \arg
+.byte \arg2
 .hword \id
 .hword \npc
 .hword \position
 .hword \type
 .endm
 
-.macro Message2 id npc position type
+.macro Message2 arg arg2 id npc position type
 .hword 0x3D
-.byte 0x0
-.byte 0x04
+.byte \arg
+.byte \arg2
 .hword \id
 .hword \npc
 .hword \position
@@ -337,26 +349,26 @@
 .hword 0x46
 .endm
 
-.macro YesNo yesno
+.macro YesNoBox yesno
 .hword 0x47
 .hword \yesno
 .endm
 
-.macro Message3 id npc position type unknown
+.macro Message3 arg arg2 id npc position type CMD
 .hword 0x48
-.byte 0x0
-.byte 0x04
+.byte \arg
+.byte \arg2
 .hword \id
 .hword \npc
 .hword \position
 .hword \type
-.hword \unknown
+.hword \CMD
 .endm
 
-.macro DoubleMessage idblack idwhite npc position type
+.macro DoubleMessage arg arg2 idblack idwhite npc position type
 .hword 0x49
-.byte 0x0
-.byte 0x04
+.byte \arg
+.byte \arg2
 .hword \idblack
 .hword \idwhite
 .hword \npc
@@ -364,10 +376,10 @@
 .hword \type
 .endm
 
-.macro AngryMessage id unknownbyte position
+.macro AngryMessage id CMDbyte position
 .hword 0x4A
 .hword \id
-.byte \unknownbyte
+.byte \CMDbyte
 .hword \position
 .endm
 
@@ -386,7 +398,7 @@
 .hword \item
 .endm
 
-.macro unknown_4E arg1 arg2 arg3 arg4
+.macro CMD_4E arg1 arg2 arg3 arg4
 .hword 0x4E
 .byte \arg1
 .hword \arg2
@@ -424,13 +436,13 @@
 .hword \party_poke
 .endm
 
-.macro SetVarPartyPoke2 arg party_poke2
+.macro SetVarPartyPokemonNick arg party_poke
 .hword 0x54
 .byte \arg
 .hword \party_poke
 .endm
 
-.macro SetVar_Unknown arg value
+.macro SetVar_CMD arg value
 .hword 0x55
 .byte \arg
 .hword \value
@@ -466,7 +478,7 @@
 .hword \poke
 .endm
 
-.macro SetVar_Unknown2 arg value
+.macro SetVar_CMD2 arg value
 .hword 0x5B
 .byte \arg
 .hword \value
@@ -524,7 +536,7 @@
 .macro ApplyMovement npc movementdata
 .hword 0x64
 .hword \npc
-.word   \movementdata - 1f
+.word \movementdata - 1f
 1:
 .endm
 
@@ -532,32 +544,35 @@
 .hword 0x65
 .endm
 
-.macro StoreHeroPosition xcoord ycoord
+.macro StoreHeroPosition_66 xcoord ycoord
 .hword 0x66
 .hword \xcoord
 .hword \ycoord
 .endm
 
-.macro Unknown_67 value value2
+.macro CMD_67 value value2
 .hword 0x67
 .hword \value
 .hword \value2
 .endm
 
-.macro StoreHeroPosition2 xcoord ycoord
+.macro StoreHeroPosition xcoord ycoord
 .hword 0x68
 .hword \xcoord
 .hword \ycoord
 .endm
 
-.macro StoreNPCPosition npc xcoord ycoord
-.hword 0x69 
-.hword \npc
-.hword \xcoord
-.hword \ycoord
+.macro MakeNPC arg arg2 arg3 arg4 arg5 arg6
+.hword 0x69
+.hword \arg
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.hword \arg5
+.hword \arg6
 .endm
 
-.macro Unknown_6A npc flag
+.macro CMD_6A npc flag
 .hword 0x6A
 .hword \npc
 .hword \flag
@@ -582,17 +597,17 @@
 .hword \direction
 .endm
 
-.macro Unknown_6E arg
+.macro StoreHeroOrientation arg
 .hword 0x6E
 .hword \arg
 .endm
 
-.macro Unknown_6F arg
+.macro CMD_6F arg
 .hword 0x6F
 .hword \arg
 .endm
 
-.macro Unknown_70 arg arg2 arg3 arg4 arg5
+.macro CMD_70 arg arg2 arg3 arg4 arg5
 .hword 0x70
 .hword \arg
 .hword \arg2
@@ -601,14 +616,14 @@
 .hword \arg5
 .endm
 
-.macro Unknown_71 arg arg2 arg3 
+.macro CMD_71 arg arg2 arg3
 .hword 0x71
 .hword \arg
 .hword \arg2
 .hword \arg3
 .endm
 
-.macro Unknown_72 arg arg2 arg3 arg4
+.macro CMD_72 arg arg2 arg3 arg4
 .hword 0x72
 .hword \arg
 .hword \arg2
@@ -616,7 +631,7 @@
 .hword \arg4
 .endm
 
-.macro Unknown_73 arg arg2
+.macro CMD_73 arg arg2
 .hword 0x73
 .hword \arg
 .hword \arg2
@@ -631,21 +646,17 @@
 .hword \npc
 .endm
 
-.macro ReleaseAll
-.hword 0x76
-.endm
-
 .macro Lock npc
 .hword 0x77
 .hword \npc
 .endm
 
-.macro Unknown_78 var
+.macro CMD_78 var
 .hword 0x78
 .hword \var
 .endm
 
-.macro Unknown_79 npc arg2 arg3
+.macro CMD_79 npc arg2 arg3
 .hword 0x79
 .hword \npc
 .hword \arg2
@@ -660,7 +671,7 @@
 .hword \zcoord
 .endm
 
-.macro Unknown_7C arg arg2 arg3 arg4
+.macro CMD_7C arg arg2 arg3 arg4
 .hword 0x7C
 .hword \arg
 .hword \arg2
@@ -668,7 +679,7 @@
 .hword \arg4
 .endm
 
-.macro Unknown_7D arg arg2 arg3 arg4
+.macro CMD_7D arg arg2 arg3 arg4
 .hword 0x7D
 .hword \arg
 .hword \arg2
@@ -681,22 +692,22 @@
 .hword \npc
 .endm
 
-.macro Unknown_7F arg arg2
+.macro CMD_7F arg arg2
 .hword 0x7F
 .hword \arg
 .hword \arg2
 .endm
 
-.macro Unknown_80 arg
+.macro CMD_80 arg
 .hword 0x80
 .hword \arg
 .endm
 
-.macro Unknown_81
+.macro CMD_81
 .hword 0x81
 .endm
 
-.macro Unknown_82 arg arg2
+.macro CMD_82 arg arg2
 .hword 0x82
 .hword \arg
 .hword \arg2
@@ -727,21 +738,21 @@
 .hword \logic
 .endm
 
-.macro Unknown_87 arg arg2 arg3
+.macro CMD_87 arg arg2 arg3
 .hword 0x87
 .hword \arg
 .hword \arg2
 .hword \arg3
 .endm
 
-.macro Unknown_88 arg arg2 arg3
+.macro CMD_88 arg arg2 arg3
 .hword 0x88
 .hword \arg
 .hword \arg2
 .hword \arg3
 .endm
 
-.macro Unknown_8A arg arg2
+.macro CMD_8A arg arg2
 .hword 0x8A
 .hword \arg
 .hword \arg2
@@ -752,12 +763,12 @@
 .hword \songid
 .endm
 
-.macro EndBattle 
+.macro EndBattle
 .hword 0x8C
 .endm
 
 .macro StoreBattleResult variable
-.hword 0x8D 
+.hword 0x8D
 .hword \variable
 .endm
 
@@ -784,7 +795,7 @@
 .endm
 
 .macro TrainerBattle trainerid arg2 arg3 arg4
-.hword 0x94 
+.hword 0x94
 .hword \trainerid
 .hword \arg2
 .hword \arg3
@@ -796,7 +807,7 @@
 .hword \id
 .endm
 
-.macro Unknown_96 trainerid
+.macro CMD_96 trainerid
 .hword 0x96
 .hword \trainerid
 .endm
@@ -816,27 +827,27 @@
 .hword 0x9E
 .endm
 
-.macro Unknown_9F
+.macro CMD_9F
 .hword 0x9F
 .endm
 
-.macro Unknown_A2 sound arg2
+.macro CMD_A2 sound arg2
 .hword 0xA2
 .hword \sound
 .hword \arg2
 .endm
 
-.macro Unknown_A3 arg
+.macro CMD_A3 arg
 .hword 0xA3
 .hword \arg
 .endm
 
-.macro Unknown_A4 arg
+.macro CMD_A4 arg
 .hword 0xA4
 .hword \arg
 .endm
 
-.macro Unknown_A5 arg arg2
+.macro CMD_A5 arg arg2
 .hword 0xA5
 .hword \arg
 .hword \arg2
@@ -870,7 +881,7 @@
 .hword \arg2
 .endm
 
-.macro WaitCry 
+.macro WaitCry
 .hword 0xAC
 .endm
 
@@ -885,11 +896,11 @@
 .hword 0xB0
 .endm
 
-.macro Unknown_B1
+.macro CMD_B1
 .hword 0xB1
 .endm
 
-.macro Multi2 arg arg2 arg3 arg4 arg5 var
+.macro Multi arg arg2 arg3 arg4 arg5 var
 .hword 0xB2
 .byte \arg
 .byte \arg2
@@ -947,7 +958,7 @@
 .hword \result
 .endm
 
-.macro Unknown_BA arg arg2 arg3 arg4
+.macro CMD_BA arg arg2 arg3 arg4
 .hword 0xBA
 .hword \arg
 .hword \arg2
@@ -955,13 +966,13 @@
 .hword \arg4
 .endm
 
-.macro Unknown_BB arg arg2
+.macro CMD_BB arg arg2
 .hword 0xBB
 .hword \arg
 .hword \arg2
 .endm
 
-.macro Unknown_BC arg
+.macro CMD_BC arg
 .hword 0xBC
 .hword \arg
 .endm
@@ -973,13 +984,12 @@
 .hword \ycoord
 .endm
 
-.macro TeleportWarp mapid xcoord ycoord zcoord npcfacing
+.macro TeleportWarpNPC mapid xcoord ycoord zcoord npcfacing
 .hword 0xBF
 .hword \mapid
 .hword \xcoord
 .hword \ycoord
 .hword \zcoord
-.hword \npcfacing
 .endm
 
 .macro FallWarp mapid xcoord ycoord
@@ -997,11 +1007,11 @@
 .hword \herofacing
 .endm
 
-.macro UnionWarp 
+.macro UnionWarp
 .hword 0xC3
 .endm
 
-.macro TeleportWarp2 mapid xcoord ycoord zcoord herofacing
+.macro TeleportWarp mapid xcoord ycoord zcoord herofacing
 .hword 0xC4
 .hword \mapid
 .hword \xcoord
@@ -1037,22 +1047,22 @@
 .hword \arg2
 .endm
 
-.macro StoreVarItem arg 
+.macro StoreVarItem arg
 .hword 0xCC
 .hword \arg
 .endm
 
-.macro StoreVar_CD arg 
+.macro StoreVar_CD arg
 .hword 0xCD
 .hword \arg
 .endm
 
-.macro StoreVar_CE arg 
+.macro StoreVar_CE arg
 .hword 0xCE
 .hword \arg
 .endm
 
-.macro StoreVar_CF arg 
+.macro StoreVar_CF arg
 .hword 0xCF
 .hword \arg
 .endm
@@ -1101,24 +1111,290 @@
 .hword \badge
 .endm
 
+.macro StoreVersion var
+.hword 0xE0
+.hword \var
+.endm
+
+.macro StoreHeroGender var
+.hword 0xE1
+.hword \var
+.endm
+
+.macro CMD_E3 
+.hword 0xE3
+.endm
+
+.macro StoreGender arg
+.hword 0xE4
+.hword \arg
+.endm
+
+.macro ActivateRelocator arg
+.hword 0xE7
+.hword \arg
+.endm
+
 .macro CheckMoney storage value
 .hword 0xFB
 .hword \storage
 .hword \value
 .endm
 
-.macro GivePokemon id item level
+.macro StorePartySpecies value
+.hword 0xFE
+.hword \value
+.endm
+
+.macro CMD_104
+.hword 0x104
+.endm
+
+.macro HealPokemon
+.hword 0x104
+.endm
+
+.macro RenamePokemon var val val2
+.hword 0x105
+.hword \var
+.hword \val
+.hword \val2
+.endm
+
+.macro GivePokemon id arg2 item level
 .hword 0x10C
-.hword 0
 .hword \id
+.hword \arg2
 .hword \item
 .hword \level
+.endm
+
+.macro StorePokemonSex arg arg2 arg3
+.hword 0x110
+.hword \arg
+.hword \arg2
+.hword \arg3
+.endm
+
+.macro CMD_127 arg arg2 arg3 arg4
+.hword 0x127
+.hword \arg
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.endm
+
+.macro CMD_128 arg
+.hword 0x128
+.hword \arg
+.endm
+
+.macro CMD_129 arg arg2
+.hword 0x129
+.hword \arg
+.hword \arg2
+.endm
+
+.macro CMD_12A arg
+.hword 0x12A
+.hword \arg
 .endm
 
 .macro BootPCSound
 .hword 0x130
 .endm
 
+.macro CMD_13B var
+.hword 0x13B
+.hword \var
+.endm
+
+.macro StartCameraEvent
+.hword 0x13F
+.endm
+
+.macro StopCameraEvent
+.hword 0x140
+.endm
+
+.macro LockCamera
+.hword 0x141
+.endm
+
+.macro ReleaseCamera
+.hword 0x142
+.endm
+
+.macro MoveCamera elevation rotation arg3 zoom arg5 arg6 arg7 arg8 arg9 arg10 arg11
+.hword 0x143
+.hword \elevation
+.hword \rotation
+.hword \arg3
+.hword \zoom
+.hword \arg5 
+.hword \arg6 
+.hword \arg7 
+.hword \arg8 
+.hword \arg9 
+.hword \arg10
+.hword \arg11
+.endm
+
+.macro CMD_144 arg1
+.hword 0x144
+.hword \arg1
+.endm
+
+.macro EndCameraEvent
+.hword 0x145
+.endm
+
+.macro ResetCamera arg1 arg2
+.hword 0x147
+.hword \arg1
+.hword \arg2
+.endm
+
+.macro CallEnd
+.hword 0x14A
+.endm
+
+.macro CallStart
+.hword 0x14B
+.endm
+
+.macro ShowDiploma arg arg2
+.hword 0x151
+.hword \arg
+.hword \arg2
+.endm
+
+.macro CMD_153 arg1
+.hword 0x153
+.hword \arg1
+.endm
+
+.macro OpenInterpoke arg1 arg2
+.hword 0x155
+.hword \arg1
+.hword \arg2
+.endm
+
+.macro CMD_197 arg1 arg2
+.hword 0x197
+.byte \arg1
+.byte \arg2
+.endm
+
+.macro CMD_19A arg1 arg2
+.hword 0x19A
+.byte \arg1
+.byte \arg2
+.endm
+
+.macro SetStatusCG arg1
+.hword 0x19B
+.hword \arg1
+.endm
+
+.macro Xtransciever1 arg1 arg2 arg3 arg4
+.hword 0x1A1
+.hword \arg1
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.endm
+
+.macro FlashBlackInstant
+.hword 0x1A3
+.endm
+
+.macro Xtransciever4
+.hword 0x1A4
+.endm
+
+.macro Xtransciever5
+.hword 0x1A5
+.endm
+
+.macro Xtransciever6 arg1 arg2 arg3
+.hword 0x1A6
+.hword \arg1
+.hword \arg2
+.hword \arg3
+.endm
+
+.macro Xtransciever7
+.hword 0x1A7
+.endm
+
 .macro FadeIntoBlack
 .hword 0x1AC
 .endm
+
+.macro SetVarAffinityCheck arg1
+.hword 0x1D7
+.hword \arg1
+.endm
+
+.macro CMD_227 arg arg2
+.hword \arg
+.hword \arg2
+.endm
+
+.macro CMD_24F arg1 arg2 arg3 arg4 arg5 arg6
+.hword 0x24F
+.hword \arg1
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.hword \arg5
+.hword \arg6
+.endm
+
+.macro ChangeMusicVolume arg1
+.hword 0x253
+.hword \arg1
+.endm
+
+.macro CMD_262 arg arg2
+.hword 0x262
+.hword \arg
+.hword \arg2
+.endm
+
+.macro CMD_263 arg
+.hword 0x263
+.hword \arg
+.endm
+
+.macro CMD_276 arg1 arg2
+.hword 0x276
+.hword \arg1
+.hword \arg2
+.endm
+
+.macro CMD_290 arg1
+.hword 0x290
+.byte \arg1
+.endm
+
+.macro CMD_29F arg1
+.hword 0x29F
+.hword \arg1
+.endm
+
+.macro CMD_2E4 arg1 arg2
+.hword 0x2E4
+.hword \arg1
+.word \arg2
+.endm
+
+.macro CMD_3E8
+.hword 0x3E8
+.endm
+
+.macro CMD_3F3
+.hword 0x3F3
+.endm
+

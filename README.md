@@ -1,20 +1,31 @@
 # CheapScript
-This plans to be an easier way of scripting in the DS generation of games, using Assembly macros.
+An easier method of writing scripts for the games Pokémon Black 2 and White 2.
 
 ### Note:
-This system currently only has definitions of a few commands from Pokémon Black 2 and White 2. Other games should be supported in the future.
+This system is not perfect, nor is it complete. Hopefully, we can get to a point where I can say otherwise.
 
 ## Setup
 ### Requirements
-* devkitARM (r47 is the recommended version).
-* Python 3.5 or above.
+* devkitARM (from the devkitPro toolchain).
+* Python 3 (latest version).
 
-### Writing a script container:
+### Decompiling existing script containers:
+In order to help people understand the format of Generation 5 scripts, I have written a disassembler to decompile scripts to the format expected by the compiler. This decompiler is far from perfect; it tends to generate files with sizes larger than that of the games, and not all of the commands are implemented/discovered as of now. However, this can be used to comprehend scripts at a basic level.
+
+To invoke the decompiler and save to a file, simply find a script container from the game which you'd like to decompile, then invoke this command:
+> python DeCheapScript.py <script container name> > <output destination>.s
+
+If you just want to see the script printed to the console (not necessarily recommended...), omit the `.` operator:
+> python DeCheapScript.py <script container name>
+
+### Writing a custom script container:
+If editing an existing container isn't your goal, or you just want to start anew, that is indeed possible.
 * Create a blank text file in something such as Notepad or Notepad++. Change the extension to `.s`.
-* Copy the following lines to it (replacing "GAME_OF_CHOICE" with your game of choice; e.g B2W2):
+* Ensure the following lines are at the top:
+
 ```R
-.align 2
-.include "(GAME_OF_CHOICE).s"
+.include "commands.s"
+.include "movements.s"
 ```
 
 * Now, due to the way the DS generation scripts work, you now have to create the header section (which points to the starts of the scripts).
@@ -27,11 +38,13 @@ ExampleScript2:
   End
 ...
 ```
+
 * For each script (again, the part which is executed when you first call the script), you must add a corresponding entry in the header section. Before the declaration of any labels (i.e ExampleScript in my example), you must write these entries, and then end the header section with EndHeader. Like this:
 ```R
 ...
-script ExampleScript
-script ExampleScript2
+Header:
+  script ExampleScript
+  script ExampleScript2
 EndHeader
 
 ExampleScript:
@@ -41,13 +54,15 @@ ExampleScript2:
 ...  
 ```
 
-* This leaves the entire thing looking like this:
-```R
-.align 2
-.include "(GAME_OF_CHOICE).s"
+* You should have something akin to this (but, with the commands you want to be executed):
 
-script ExampleScript
-script ExampleScript2
+```R
+.include "commands.s"
+.include "movements.s"
+
+Header:
+  script ExampleScript
+  script ExampleScript2
 EndHeader
 
 ExampleScript:
@@ -56,20 +71,17 @@ ExampleScript2:
   End
 ```
 
-* Now, start writing your scripts under the labels you made.
+## Building
+To compile a single script container, run the following command in a console:
+> python CheapScript.py <script container> <destination>
 
-### Building
-To compile a single script container, just drag and drop a script container onto "CheapScript.py", or run the following command in a console:
-> python CheapScript.py <script container>
+## Commands
+For a list of implemented commands, click the "Wiki" tab. Otherwise, see [this]('https://raw.githubusercontent.com/PlatinumLucario/nintendo-pokemon-rom-editor/master/Pokémon DS Map Viewer/NPRE/Formats/Specific/Pokémon/Scripts/BW2CommandHandler.cs') reference for commands which may not be implemented as of yet.
 
-To compile a folder filled with script containers, just drag and drop the folder onto "CheapScript.py", or run the following command in a console:
-> python CheapScript.py <script container folder>
+## Contributors
+Want to contribute? That is completely fine by me. All you have to do is submit a pull request.
 
-### Commands:
-For a list of commands, click the "Wiki" tab.
-
-
-### Credits:
+## Credits:
 • [Kaphotics](http://github.com/kwsch) and [pichu2001](https://projectpokemon.org/home/profile/222-pichu2001/) for documentation on scripting commands.
 
-• [KDSKardabox](http://github.com/KDSKardabox) for writing the original system I later adapted for this.
+• [recordreader]('https://www.youtube.com/channel/UCDwiNjAJ-dlllv9LuUxiS_A') for being a beta tester.
