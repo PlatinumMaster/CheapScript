@@ -76,7 +76,7 @@ To compile a single script container, run the following command in a console:
 > python CheapScript.py <script container> <destination>
 
 ## Commands
-For a list of implemented commands, click the "Wiki" tab. Otherwise, see [this]('https://raw.githubusercontent.com/PlatinumLucario/nintendo-pokemon-rom-editor/master/Pokémon DS Map Viewer/NPRE/Formats/Specific/Pokémon/Scripts/BW2CommandHandler.cs') reference for commands which may not be implemented as of yet.
+For a list of implemented commands, click the "Wiki" tab. Otherwise, see [this](https://pastebin.com/QPrYmFwY) reference for commands which may not be implemented as of yet.
 
 ## Contributors
 Want to contribute? That is completely fine by me. All you have to do is submit a pull request.
@@ -84,4 +84,4 @@ Want to contribute? That is completely fine by me. All you have to do is submit 
 ## Credits:
 • [Kaphotics](http://github.com/kwsch) and [pichu2001](https://projectpokemon.org/home/profile/222-pichu2001/) for documentation on scripting commands.
 
-• [recordreader]('https://www.youtube.com/channel/UCDwiNjAJ-dlllv9LuUxiS_A') for being a beta tester.
+• [recordreader](https://www.youtube.com/channel/UCDwiNjAJ-dlllv9LuUxiS_A) for being a beta tester.
