@@ -53,15 +53,15 @@ def process_script_commands(script):
         params = []
         isFunction = False
         isMovement = False
-        addr = 0
         try: 
             cmd = commands[cmd_num]
+            addr = 0
             if cmd[1] != None:
                 params = [hex(x) for x in list(struct.unpack(cmd[1], s.read(struct.calcsize(cmd[1]))))]
                 if cmd[0] == 'If' or cmd[0] == 'When':
                     addr = s.tell() + int(params[1], 16)
                     isFunction = True
-                elif cmd[0 == 'Jump' or cmd[0] == 'CallRoutine':
+                elif cmd[0] == 'Jump' or cmd[0] == 'CallRoutine':
                     addr = s.tell() + int(params[0], 16)            
                     isFunction = True
                 elif cmd[0] == 'ApplyMovement':
@@ -91,11 +91,17 @@ def process_script_commands(script):
                     s.seek(-1, 1)
                     break
                 s.seek(-1, 1)
+            elif cmd[0] == 'StorePokemonFormNumber':
+                next = struct.unpack("<H", s.read(2))[0]
+                while next >= 0x4000:
+                    params.append(next)
+                    next = struct.unpack("<H", s.read(2))[0]
 
         except KeyError:
             s.seek(-2, 1)
             print('    .byte %s @%s' % (hex(struct.unpack('<B', s.read(1))[0]), hex(pos)))
         
+    functions.sort()
     for x in functions:
         print ('Function%d:' % function_map[x])
         process_script_commands(x)
