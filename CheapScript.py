@@ -25,9 +25,9 @@ def run_command(cmd):
 
 def process_script(script, output):
 	print("Creating %s" % script)
-	run_command([AS, '-mthumb', '-c', script.as_posix(), '-o', script.stem + '.o'])
-	run_command([OBJCOPY, '-O', 'binary', script.stem + '.o', output / (script.stem + '.bin')])
-	(script.parent / (script.stem + '.o')).unlink()
+	run_command([AS, '-mthumb', '-c', script.as_posix(), '-o', output.stem + '.o'])
+	run_command([OBJCOPY, '-O', 'binary', output.stem + '.o', output])
+	(script.parent / (output.stem + '.o')).unlink()
 
 def main():
 	if len(sys.argv) >= 3: # Make Script

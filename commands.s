@@ -1337,6 +1337,14 @@
 .hword \arg1
 .endm
 
+.macro CMD_1D8 arg1 arg2 arg3 arg4
+.hword 0x1D8
+.hword \arg1
+.hword \arg2
+.hword \arg3
+.hword \arg4
+.endm
+
 .macro CMD_227 arg arg2
 .hword \arg
 .hword \arg2
